@@ -8,6 +8,16 @@
 	<div id="tank">
 		<div class="gun"></div>
 	</div>
+	<div id="timer">0</div>
+	<div id="loseBlock">
+		<div class="loseMessage">
+			<div class="justFlexWrapper">
+				<span class="wasted">WASTED</span>
+				<span class="score"></span>
+			</div>
+			<button class="playAgain">Play again</button>
+		</div>
+	</div>
 </body>
 <style type="text/css">
 	*{
@@ -18,13 +28,14 @@
 	body{
 		height: 100vh;
 		overflow: hidden;
+		font-family: Helvetica;
 	}
 	.enemy{
 		height: 80px;
 		width: 80px;
 		position: absolute;
 		border: 1px solid black;
-		background: red;
+		background: #990c32;
 	}
 	#tank{
 		height: 60px;
@@ -48,7 +59,7 @@
 			display: block;
 			height: 60px;
 			width: 60px;
-			background: yellow;
+			background: orange;
 			border: 2px solid #4d4f4f;
 			border-radius: 100%;
 			position: absolute;
@@ -61,613 +72,719 @@
 		position: absolute;
 		border: 2px solid #4d4f4f;
 	}
+	#timer{
+		height: 70px;
+		width: 170px;
+		border-radius: 0 0 20px 20px;
+		background: black;
+		color: white;
+		opacity: 0.5;
+		position: absolute;
+		top: -5px;
+		left: 50%;
+		transform: translate(-50%);
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		font-size: 2rem;
+	}
+	#loseBlock{
+		height: 100%;
+		width: 100%;
+		background: black;
+		opacity: 0.5;
+		position: absolute;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		left: -100%;
+	}
+		.loseMessage{
+			height: 300px;
+			width: 550px;
+			background: white;
+			border-radius: 30px;
+			border: 2px solid orange;
+			display: flex;
+			justify-content: space-around;
+			align-items: center;
+			flex-direction: column;
+		}
+			.wasted{
+				display: block;
+				font-size: 4rem;
+			}
+			.score{
+				margin-top: 10px;
+				display: block;
+				font-size: 2rem;
+				text-align: center;
+			}
+			button.playAgain{
+				height: 40px;
+				width: 150px;
+				border-radius: 20px;
+				background: orange;
+				border: 1px solid #4d4f4f;
+				font-size: 1rem;
+				letter-spacing: 1px;
+			}
+				button.playAgain:hover{
+					border: 1px solid #00abd8;
+				}
+
 </style>
 <script>
-let tank = document.querySelector("#tank");
-let positionX = document.body.scrollWidth / 2 - 30;
-let positionY = document.body.scrollHeight / 2 - 30;
-tank.style.left = positionX + "px";
-tank.style.top = positionY + "px";
-
-let wKeyPressed = false;
-let sKeyPressed = false;
-let aKeyPressed = false;
-let dKeyPressed = false;
-
-addEventListener("keydown", ()=>{//TANK MOVING
-	if (event.code == "KeyW" && event.repeat == false){
-		wKeyPressed = true;
-		let speed = 1;
-		let permittedSpeed = aKeyPressed || dKeyPressed ? 2.5 : 3.5;
-		let speedIncrease = setInterval(()=>{
-			if (speed < 2.5){
-				speed += 0.5;
-			}else if(speed >= 2.5 && speed < permittedSpeed){
-				speed += 0.25;
-			}
-			else if(speed > permittedSpeed){
-				speed -= 0.25;
-			}
-		},75);
-		let timer = setInterval(()=>{
-			aKeyPressed || dKeyPressed ? permittedSpeed = 2.5 : permittedSpeed = 3.5;
-			if (positionY > 0){
-				positionY -= speed;
-			}else{
-				positionY += 10;
-				speed = 0;
-			}
-			tank.style.top = positionY + "px";
-		},10);
-		addEventListener("keyup", function keyup(){
-			if (event.code == "KeyW"){
-				wKeyPressed = false;
-				clearInterval(speedIncrease);
-				let speedDecrease = setInterval(()=>{
-					if (speed > 1){
-						speed -= 0.5;
-					}else{
-						clearInterval(speedDecrease);
-						clearInterval(timer);
-					}
-				},75);
-				removeEventListener("keyup", keyup);
-			}
-		})
-	}
-	if (event.code == "KeyS" && event.repeat == false){
-		sKeyPressed = true;
-		let speed = 1;
-		let permittedSpeed = aKeyPressed || dKeyPressed ? 2.5 : 3.5;
-		let speedIncrease = setInterval(()=>{
-			if (speed < 2.5){
-				speed += 0.5;
-			}else if(speed >= 2.5 && speed < permittedSpeed){
-				speed += 0.25;
-			}
-			else if(speed > permittedSpeed){
-				speed -= 0.25;
-			}
-		},75);
-		let timer = setInterval(()=>{
-			aKeyPressed || dKeyPressed ? permittedSpeed = 2.5 : permittedSpeed = 3.5;
-			if (positionY < document.body.scrollHeight - 60){
-				positionY += speed;
-			}else{
-				positionY -= 10;
-				speed = 0;
-			}
-			tank.style.top = positionY + "px";
-		},10);
-		addEventListener("keyup", function keyup(){
-			if (event.code == "KeyS"){
-				sKeyPressed = false;
-				clearInterval(speedIncrease);
-				let speedDecrease = setInterval(()=>{
-					if (speed > 1){
-						speed -= 0.5;
-					}else{
-						clearInterval(speedDecrease);
-						clearInterval(timer);
-					}
-				},75);
-				removeEventListener("keyup", keyup);
-			}
-		})
-	}
-	if (event.code == "KeyA" && event.repeat == false){
-		aKeyPressed = true;
-		let speed = 1;
-		let permittedSpeed = wKeyPressed || sKeyPressed ? 2.5 : 3.5;
-		let speedIncrease = setInterval(()=>{
-			if (speed < 2.5){
-				speed += 0.5;
-			}else if(speed >= 2.5 && speed < permittedSpeed){
-				speed += 0.25;
-			}
-			else if(speed > permittedSpeed){
-				speed -= 0.25;
-			}
-		},75);
-		let timer = setInterval(()=>{
-			wKeyPressed || sKeyPressed ? permittedSpeed = 2.5 : permittedSpeed = 3.5;
-			if (positionX > 0){
-				positionX -= speed;
-			}else{
-				positionX += 10;
-				speed = 0;
-			}
-			tank.style.left = positionX + "px";
-		},10);
-		addEventListener("keyup", function keyup(){
-			if (event.code == "KeyA"){
-				aKeyPressed = false;
-				clearInterval(speedIncrease);
-				let speedDecrease = setInterval(()=>{
-					if (speed > 1){
-						speed -= 0.5;
-					}else{
-						clearInterval(speedDecrease);
-						clearInterval(timer);
-					}
-				},75);
-				removeEventListener("keyup", keyup);
-			}
-		})
-	}
-	if (event.code == "KeyD" && event.repeat == false){
-		dKeyPressed = true;
-		let speed = 1;
-		let permittedSpeed = wKeyPressed || sKeyPressed ? 2.5 : 3.5;
-		let speedIncrease = setInterval(()=>{
-			if (speed < 2.5){
-				speed += 0.5;
-			}else if(speed >= 2.5 && speed < permittedSpeed){
-				speed += 0.25;
-			}
-			else if(speed > permittedSpeed){
-				speed -= 0.25;
-			}
-		},75);
-		let timer = setInterval(()=>{
-			wKeyPressed || sKeyPressed ? permittedSpeed = 2.5 : permittedSpeed = 3.5;
-			if (positionX < document.body.scrollWidth - 60){
-				positionX += speed;
-			}else{
-				positionX -= 10;
-				speed = 0;
-			}
-			tank.style.left = positionX + "px";
-		},10);
-		addEventListener("keyup", function keyup(){
-			if (event.code == "KeyD"){
-				dKeyPressed = false;
-				clearInterval(speedIncrease)
-				let speedDecrease = setInterval(()=>{
-					if (speed > 1){
-						speed -= 0.5;
-					}else{
-						clearInterval(speedDecrease);
-						clearInterval(timer);
-					}
-				},75);
-				removeEventListener("keyup", keyup);
-			}
-		})
-	}
-})
-
-
-let x;
-let y;
-addEventListener("mousemove", rotate);
-function rotate(){
-	x = event.clientX - (parseInt(tank.style.left) + 30);
-	y = event.clientY - (parseInt(tank.style.top) + 30);
-	let r = 90 - 180 / Math.PI * -Math.atan2(y, x);
-	tank.style.transform = `rotate(${r}deg`;
+startGame();
+document.querySelector(".playAgain").onclick = ()=>{
+	document.querySelector("#loseBlock").style.left = "-100%";
+	document.querySelector("#timer").innerHTML = "0";
+	startGame();
 }
-
-addEventListener("mousedown", ()=>{
-	if (event.which == 1){
-		shooting();
-	}
-});
-addEventListener("keydown", ()=>{
-	if (event.code == "Space"){
-		shooting();
-	}
-});
-
-let shotPermission = true;
-let reload = 500;
-let bulletSpeed = 7;
-let enemySpeed = 1;
-
-function shooting(){
-	let gunBurst = setInterval(()=>{
-		if (shotPermission){
-			startShoot();
+	function startGame(){
+	let isWasted = false;
+	let cleaner = setInterval(()=>{
+		if (isWasted){
+			clearInterval(complicator);
+			removeEventListener("keydown", keydown);
+			removeEventListener("mousemove", rotate);
+			removeEventListener("mousedown", mousedown);
+			removeEventListener("keydown", keydownSpace);
+			clearInterval(boxCreator);
+			clearInterval(cleaner);
 		}
-	},0)
-	addEventListener("mouseup", ()=>{
-		clearInterval(gunBurst);
-	})
-	addEventListener("keyup", ()=>{
+	},0);
+
+
+	let flatSpeed = 3.5;
+	let reload = 500;
+	let bulletSpeed = 7;
+	let enemySpeed = 1;
+	let maxDivsOnMap = 1;
+	let howOftenCreateDivs = 1000;
+	let seconds = 0;
+
+	let complicator = setInterval(()=>{
+		enemySpeed += 0.1;
+		maxDivsOnMap += 0.1;
+		seconds++;
+		document.querySelector("#timer").innerHTML = `${seconds}`
+	},1000)
+
+
+	let tank = document.querySelector("#tank");
+	let positionX = document.body.scrollWidth / 2 - 30;
+	let positionY = document.body.scrollHeight / 2 - 30;
+	tank.style.left = positionX + "px";
+	tank.style.top = positionY + "px";
+
+
+	let wKeyPressed = false, sKeyPressed = false, aKeyPressed = false, dKeyPressed = false;
+	addEventListener("keydown", keydown);
+	function keydown(){//TANK MOVING
+		if (event.code == "KeyW" && event.repeat == false){
+			wKeyPressed = true;
+			let speed = 1;
+			let skewSpeed = flatSpeed / 7 * 5;
+			let permittedSpeed = aKeyPressed || dKeyPressed ? skewSpeed : flatSpeed;
+			let speedIncrease = setInterval(()=>{
+				if (speed < skewSpeed){
+					speed += skewSpeed / 5;
+				}else if(speed >= skewSpeed && speed < permittedSpeed){
+					speed += skewSpeed / 10;
+				}
+				else if(speed > permittedSpeed){
+					speed -= skewSpeed / 10;
+				}
+			},75);
+			let timer = setInterval(()=>{
+				aKeyPressed || dKeyPressed ? permittedSpeed = skewSpeed : permittedSpeed = flatSpeed;
+				if (positionY > 0){
+					positionY -= speed;
+				}else{
+					positionY += 10;
+					speed = 0;
+				}
+				tank.style.top = positionY + "px";
+			},10);
+			addEventListener("keyup", function keyup(){
+				if (event.code == "KeyW"){
+					wKeyPressed = false;
+					clearInterval(speedIncrease);
+					let speedDecrease = setInterval(()=>{
+						if (speed > 1){
+							speed -= skewSpeed / 5;
+						}else{
+							clearInterval(speedDecrease);
+							clearInterval(timer);
+						}
+					},75);
+					removeEventListener("keyup", keyup);
+				}
+			})
+		}
+		if (event.code == "KeyS" && event.repeat == false){
+			sKeyPressed = true;
+			let speed = 1;
+			let skewSpeed = flatSpeed / 7 * 5;
+			let permittedSpeed = aKeyPressed || dKeyPressed ? skewSpeed : flatSpeed;
+			let speedIncrease = setInterval(()=>{
+				if (speed < skewSpeed){
+					speed += skewSpeed / 5;
+				}else if(speed >= skewSpeed && speed < permittedSpeed){
+					speed += skewSpeed / 10;
+				}
+				else if(speed > permittedSpeed){
+					speed -= skewSpeed / 10;
+				}
+			},75);
+			let timer = setInterval(()=>{
+				aKeyPressed || dKeyPressed ? permittedSpeed = skewSpeed : permittedSpeed = flatSpeed;
+				if (positionY < document.body.scrollHeight - 60){
+					positionY += speed;
+				}else{
+					positionY -= 10;
+					speed = 0;
+				}
+				tank.style.top = positionY + "px";
+			},10);
+			addEventListener("keyup", function keyup(){
+				if (event.code == "KeyS"){
+					sKeyPressed = false;
+					clearInterval(speedIncrease);
+					let speedDecrease = setInterval(()=>{
+						if (speed > 1){
+							speed -= skewSpeed / 5;
+						}else{
+							clearInterval(speedDecrease);
+							clearInterval(timer);
+						}
+					},75);
+					removeEventListener("keyup", keyup);
+				}
+			})
+		}
+		if (event.code == "KeyA" && event.repeat == false){
+			aKeyPressed = true;
+			let speed = 1;
+			let skewSpeed = flatSpeed / 7 * 5;
+			let permittedSpeed = wKeyPressed || sKeyPressed ? skewSpeed : flatSpeed;
+			let speedIncrease = setInterval(()=>{
+				if (speed < skewSpeed){
+					speed += skewSpeed / 5;
+				}else if(speed >= skewSpeed && speed < permittedSpeed){
+					speed += skewSpeed / 10;
+				}
+				else if(speed > permittedSpeed){
+					speed -= skewSpeed / 10;
+				}
+			},75);
+			let timer = setInterval(()=>{
+				wKeyPressed || sKeyPressed ? permittedSpeed = skewSpeed : permittedSpeed = flatSpeed;
+				if (positionX > 0){
+					positionX -= speed;
+				}else{
+					positionX += 10;
+					speed = 0;
+				}
+				tank.style.left = positionX + "px";
+			},10);
+			addEventListener("keyup", function keyup(){
+				if (event.code == "KeyA"){
+					aKeyPressed = false;
+					clearInterval(speedIncrease);
+					let speedDecrease = setInterval(()=>{
+						if (speed > 1){
+							speed -= skewSpeed / 5;
+						}else{
+							clearInterval(speedDecrease);
+							clearInterval(timer);
+						}
+					},75);
+					removeEventListener("keyup", keyup);
+				}
+			})
+		}
+		if (event.code == "KeyD" && event.repeat == false){
+			dKeyPressed = true;
+			let speed = 1;
+			let skewSpeed = flatSpeed / 7 * 5;
+			let permittedSpeed = wKeyPressed || sKeyPressed ? skewSpeed : flatSpeed;
+			let speedIncrease = setInterval(()=>{
+				if (speed < skewSpeed){
+					speed += skewSpeed / 5;
+				}else if(speed >= skewSpeed && speed < permittedSpeed){
+					speed += skewSpeed / 10;
+				}
+				else if(speed > permittedSpeed){
+					speed -= skewSpeed / 10;
+				}
+			},75);
+			let timer = setInterval(()=>{
+				wKeyPressed || sKeyPressed ? permittedSpeed = skewSpeed : permittedSpeed = flatSpeed = 3.5;
+				if (positionX < document.body.scrollWidth - 60){
+					positionX += speed;
+				}else{
+					positionX -= 10;
+					speed = 0;
+				}
+				tank.style.left = positionX + "px";
+			},10);
+			addEventListener("keyup", function keyup(){
+				if (event.code == "KeyD"){
+					dKeyPressed = false;
+					clearInterval(speedIncrease)
+					let speedDecrease = setInterval(()=>{
+						if (speed > 1){
+							speed -= skewSpeed / 5;
+						}else{
+							clearInterval(speedDecrease);
+							clearInterval(timer);
+						}
+					},75);
+					removeEventListener("keyup", keyup);
+				}
+			})
+		}
+	}
+
+
+	let x;
+	let y;
+	addEventListener("mousemove", rotate);
+	function rotate(){
+		x = event.clientX - (parseInt(tank.style.left) + 30);
+		y = event.clientY - (parseInt(tank.style.top) + 30);
+		let r = 90 - 180 / Math.PI * -Math.atan2(y, x);
+		tank.style.transform = `rotate(${r}deg`;
+	}
+
+	addEventListener("mousedown", mousedown);
+	function mousedown(){
+		if (event.which == 1){
+			shooting();
+		}
+	}
+	addEventListener("keydown", keydownSpace);
+	function keydownSpace(){
 		if (event.code == "Space"){
+			shooting();
+		}
+	}
+
+
+
+
+	let shotPermission = true;
+	function shooting(){
+		let gunBurst = setInterval(()=>{
+			if (shotPermission){
+				startShoot();
+			}
+		},0)
+		addEventListener("mouseup", ()=>{
 			clearInterval(gunBurst);
-		}
-	})
-	function startShoot(){
-		shotPermission = false;
-		setTimeout(()=>{
-			shotPermission = true;
-		},reload)
-		let bullet = document.createElement("div");
-		bullet.className = "bullet";
-		let left = parseInt(tank.style.left) + 15;
-		let top = parseInt(tank.style.top) + 15;
-		bullet.style.left = left + "px";
-		bullet.style.top = top + "px";
-		document.body.prepend(bullet);
+		})
+		addEventListener("keyup", ()=>{
+			if (event.code == "Space"){
+				clearInterval(gunBurst);
+			}
+		})
+		function startShoot(){
+			shotPermission = false;
+			setTimeout(()=>{
+				shotPermission = true;
+			},reload)
+			let bullet = document.createElement("div");
+			bullet.className = "bullet";
+			let left = parseInt(tank.style.left) + 15;
+			let top = parseInt(tank.style.top) + 15;
+			bullet.style.left = left + "px";
+			bullet.style.top = top + "px";
+			document.body.prepend(bullet);
 
-		let bulletTeleport = true;
-		let currentBulletSpeed = bulletSpeed * 2;
-		if (x >= 0 && y >= 0){
-			if (x >= y){
-				let coefSmall = y / x;
-				let timer = setInterval(()=>{
-					if (currentBulletSpeed > bulletSpeed){
-						currentBulletSpeed *= 0.99;
-					}
-					if (bulletTeleport){
-						for(let i = 0; i < 30 / bulletSpeed; i++){
+			let bulletTeleport = true;
+			let currentBulletSpeed = bulletSpeed * 2;
+			if (x >= 0 && y >= 0){
+				if (x >= y){
+					let coefSmall = y / x;
+					let timer = setInterval(()=>{
+						if (currentBulletSpeed > bulletSpeed){
+							currentBulletSpeed *= 0.99;
+						}
+						if (bulletTeleport){
+							for(let i = 0; i < 30 / bulletSpeed; i++){
+								left += getNormalSpeed(currentBulletSpeed, coefSmall);
+								top += getCoefsmallSpeed(currentBulletSpeed, coefSmall);
+							}
+							bulletTeleport = false;
+						}else{
 							left += getNormalSpeed(currentBulletSpeed, coefSmall);
 							top += getCoefsmallSpeed(currentBulletSpeed, coefSmall);
 						}
-						bulletTeleport = false;
-					}else{
-						left += getNormalSpeed(currentBulletSpeed, coefSmall);
-						top += getCoefsmallSpeed(currentBulletSpeed, coefSmall);
-					}
-					bullet.style.left = left + "px";
-					bullet.style.top = top + "px";
-
-					if (left < -30 || top < -30 || left > document.body.scrollWidth || top > document.body.scrollHeight){
-						clearInterval(timer)
-						bullet.remove();
-					}
-				}, 10);
-			}else{
-				let coefSmall = x / y;
-				let timer = setInterval(()=>{
-					if (currentBulletSpeed > bulletSpeed){
-						currentBulletSpeed *= 0.99;
-					}
-					if (bulletTeleport){
-						for(let i = 0; i < 30 / bulletSpeed; i++){
+						bullet.style.left = left + "px";
+						bullet.style.top = top + "px";
+						bulletCollision(timer, bullet);
+					}, 10);
+				}else{
+					let coefSmall = x / y;
+					let timer = setInterval(()=>{
+						if (currentBulletSpeed > bulletSpeed){
+							currentBulletSpeed *= 0.99;
+						}
+						if (bulletTeleport){
+							for(let i = 0; i < 30 / bulletSpeed; i++){
+								left += getCoefsmallSpeed(currentBulletSpeed, coefSmall);
+								top += getNormalSpeed(currentBulletSpeed, coefSmall);
+							}
+							bulletTeleport = false;
+						}else{
 							left += getCoefsmallSpeed(currentBulletSpeed, coefSmall);
 							top += getNormalSpeed(currentBulletSpeed, coefSmall);
 						}
-						bulletTeleport = false;
-					}else{
-						left += getCoefsmallSpeed(currentBulletSpeed, coefSmall);
-						top += getNormalSpeed(currentBulletSpeed, coefSmall);
-					}
-					bullet.style.left = left + "px";
-					bullet.style.top = top + "px";
-
-					if (left < -30 || top < -30 || left > document.body.scrollWidth || top > document.body.scrollHeight){
-						clearInterval(timer)
-						bullet.remove();
-					}
-				}, 10);
-			}
-		}else if (x < 0 && y >= 0){
-			if (-x >= y){
-				let coefSmall = y / -x;
-				let timer = setInterval(()=>{
-					if (currentBulletSpeed > bulletSpeed){
-						currentBulletSpeed *= 0.99;
-					}
-					if (bulletTeleport){
-						for(let i = 0; i < 30 / bulletSpeed; i++){
+						bullet.style.left = left + "px";
+						bullet.style.top = top + "px";
+						bulletCollision(timer, bullet);
+					}, 10);
+				}
+			}else if (x < 0 && y >= 0){
+				if (-x >= y){
+					let coefSmall = y / -x;
+					let timer = setInterval(()=>{
+						if (currentBulletSpeed > bulletSpeed){
+							currentBulletSpeed *= 0.99;
+						}
+						if (bulletTeleport){
+							for(let i = 0; i < 30 / bulletSpeed; i++){
+								left -= getNormalSpeed(currentBulletSpeed, coefSmall);
+								top += getCoefsmallSpeed(currentBulletSpeed, coefSmall);
+							}
+							bulletTeleport = false;
+						}else{
 							left -= getNormalSpeed(currentBulletSpeed, coefSmall);
 							top += getCoefsmallSpeed(currentBulletSpeed, coefSmall);
 						}
-						bulletTeleport = false;
-					}else{
-						left -= getNormalSpeed(currentBulletSpeed, coefSmall);
-						top += getCoefsmallSpeed(currentBulletSpeed, coefSmall);
-					}
-					bullet.style.left = left + "px";
-					bullet.style.top = top + "px";
-
-					if (left < -30 || top < -30 || left > document.body.scrollWidth || top > document.body.scrollHeight){
-						clearInterval(timer)
-						bullet.remove();
-					}
-				}, 10);
-			}else{
-				let coefSmall = -x / y;
-				let timer = setInterval(()=>{
-					if (currentBulletSpeed > bulletSpeed){
-						currentBulletSpeed *= 0.99;
-					}
-					if (bulletTeleport){
-						for(let i = 0; i < 30 / bulletSpeed; i++){
+						bullet.style.left = left + "px";
+						bullet.style.top = top + "px";
+						bulletCollision(timer, bullet);
+					}, 10);
+				}else{
+					let coefSmall = -x / y;
+					let timer = setInterval(()=>{
+						if (currentBulletSpeed > bulletSpeed){
+							currentBulletSpeed *= 0.99;
+						}
+						if (bulletTeleport){
+							for(let i = 0; i < 30 / bulletSpeed; i++){
+								left -= getCoefsmallSpeed(currentBulletSpeed, coefSmall);
+								top += getNormalSpeed(currentBulletSpeed, coefSmall);
+							}
+							bulletTeleport = false;
+						}else{
 							left -= getCoefsmallSpeed(currentBulletSpeed, coefSmall);
 							top += getNormalSpeed(currentBulletSpeed, coefSmall);
 						}
-						bulletTeleport = false;
-					}else{
-						left -= getCoefsmallSpeed(currentBulletSpeed, coefSmall);
-						top += getNormalSpeed(currentBulletSpeed, coefSmall);
-					}
-					bullet.style.left = left + "px";
-					bullet.style.top = top + "px";
-
-					if (left < -30 || top < -30 || left > document.body.scrollWidth || top > document.body.scrollHeight){
-						clearInterval(timer)
-						bullet.remove();
-					}
-				}, 10);
-			}
-		}else if (x < 0 && y < 0){
-			if (-x >= -y){
-				let coefSmall = -y / -x;
-				let timer = setInterval(()=>{
-					if (currentBulletSpeed > bulletSpeed){
-						currentBulletSpeed *= 0.99;
-					}
-					if (bulletTeleport){
-						for(let i = 0; i < 30 / bulletSpeed; i++){
+						bullet.style.left = left + "px";
+						bullet.style.top = top + "px";
+						bulletCollision(timer, bullet);
+					}, 10);
+				}
+			}else if (x < 0 && y < 0){
+				if (-x >= -y){
+					let coefSmall = -y / -x;
+					let timer = setInterval(()=>{
+						if (currentBulletSpeed > bulletSpeed){
+							currentBulletSpeed *= 0.99;
+						}
+						if (bulletTeleport){
+							for(let i = 0; i < 30 / bulletSpeed; i++){
+								left -= getNormalSpeed(currentBulletSpeed, coefSmall);
+								top -= getCoefsmallSpeed(currentBulletSpeed, coefSmall);
+							}
+							bulletTeleport = false;
+						}else{
 							left -= getNormalSpeed(currentBulletSpeed, coefSmall);
 							top -= getCoefsmallSpeed(currentBulletSpeed, coefSmall);
 						}
-						bulletTeleport = false;
-					}else{
-						left -= getNormalSpeed(currentBulletSpeed, coefSmall);
-						top -= getCoefsmallSpeed(currentBulletSpeed, coefSmall);
-					}
-					bullet.style.left = left + "px";
-					bullet.style.top = top + "px";
-
-					if (left < -30 || top < -30 || left > document.body.scrollWidth || top > document.body.scrollHeight){
-						clearInterval(timer)
-						bullet.remove();
-					}
-				}, 10);
-			}else{
-				let coefSmall = -x / -y;
-				let timer = setInterval(()=>{
-					if (currentBulletSpeed > bulletSpeed){
-						currentBulletSpeed *= 0.99;
-					}
-					if (bulletTeleport){
-						for(let i = 0; i < 30 / bulletSpeed; i++){
+						bullet.style.left = left + "px";
+						bullet.style.top = top + "px";
+						bulletCollision(timer, bullet);
+					}, 10);
+				}else{
+					let coefSmall = -x / -y;
+					let timer = setInterval(()=>{
+						if (currentBulletSpeed > bulletSpeed){
+							currentBulletSpeed *= 0.99;
+						}
+						if (bulletTeleport){
+							for(let i = 0; i < 30 / bulletSpeed; i++){
+								left -= getCoefsmallSpeed(currentBulletSpeed, coefSmall);
+								top -= getNormalSpeed(currentBulletSpeed, coefSmall);
+							}
+							bulletTeleport = false;
+						}else{
 							left -= getCoefsmallSpeed(currentBulletSpeed, coefSmall);
 							top -= getNormalSpeed(currentBulletSpeed, coefSmall);
 						}
-						bulletTeleport = false;
-					}else{
-						left -= getCoefsmallSpeed(currentBulletSpeed, coefSmall);
-						top -= getNormalSpeed(currentBulletSpeed, coefSmall);
-					}
-					bullet.style.left = left + "px";
-					bullet.style.top = top + "px";
-
-					if (left < -30 || top < -30 || left > document.body.scrollWidth || top > document.body.scrollHeight){
-						clearInterval(timer)
-						bullet.remove();
-					}
-				}, 10);
-			}
-		}else{
-			if (x >= -y){
-				let coefSmall = -y / x;
-				let timer = setInterval(()=>{
-					if (currentBulletSpeed > bulletSpeed){
-						currentBulletSpeed *= 0.99;
-					}
-					if (bulletTeleport){
-						for(let i = 0; i < 30 / bulletSpeed; i++){
+						bullet.style.left = left + "px";
+						bullet.style.top = top + "px";
+						bulletCollision(timer, bullet);
+					}, 10);
+				}
+			}else{
+				if (x >= -y){
+					let coefSmall = -y / x;
+					let timer = setInterval(()=>{
+						if (currentBulletSpeed > bulletSpeed){
+							currentBulletSpeed *= 0.99;
+						}
+						if (bulletTeleport){
+							for(let i = 0; i < 30 / bulletSpeed; i++){
+								left += getNormalSpeed(currentBulletSpeed, coefSmall);
+								top -= getCoefsmallSpeed(currentBulletSpeed, coefSmall);
+							}
+							bulletTeleport = false;
+						}else{
 							left += getNormalSpeed(currentBulletSpeed, coefSmall);
 							top -= getCoefsmallSpeed(currentBulletSpeed, coefSmall);
 						}
-						bulletTeleport = false;
-					}else{
-						left += getNormalSpeed(currentBulletSpeed, coefSmall);
-						top -= getCoefsmallSpeed(currentBulletSpeed, coefSmall);
-					}
-					bullet.style.left = left + "px";
-					bullet.style.top = top + "px";
-
-					if (left < -30 || top < -30 || left > document.body.scrollWidth || top > document.body.scrollHeight){
-						clearInterval(timer)
-						bullet.remove();
-					}
-				}, 10);
-			}else{
-				let coefSmall = x / -y;
-				let timer = setInterval(()=>{
-					if (currentBulletSpeed > bulletSpeed){
-						currentBulletSpeed *= 0.99;
-					}
-					if (bulletTeleport){
-						for(let i = 0; i < 30 / bulletSpeed; i++){
+						bullet.style.left = left + "px";
+						bullet.style.top = top + "px";
+						bulletCollision(timer, bullet);
+					}, 10);
+				}else{
+					let coefSmall = x / -y;
+					let timer = setInterval(()=>{
+						if (currentBulletSpeed > bulletSpeed){
+							currentBulletSpeed *= 0.99;
+						}
+						if (bulletTeleport){
+							for(let i = 0; i < 30 / bulletSpeed; i++){
+								left += getCoefsmallSpeed(currentBulletSpeed, coefSmall);
+								top -= getNormalSpeed(currentBulletSpeed, coefSmall);
+							}
+							bulletTeleport = false;
+						}else{
 							left += getCoefsmallSpeed(currentBulletSpeed, coefSmall);
 							top -= getNormalSpeed(currentBulletSpeed, coefSmall);
 						}
-						bulletTeleport = false;
-					}else{
-						left += getCoefsmallSpeed(currentBulletSpeed, coefSmall);
-						top -= getNormalSpeed(currentBulletSpeed, coefSmall);
-					}
-					bullet.style.left = left + "px";
-					bullet.style.top = top + "px";
-
-					if (left < -30 || top < -30 || left > document.body.scrollWidth || top > document.body.scrollHeight){
+						bullet.style.left = left + "px";
+						bullet.style.top = top + "px";
+						bulletCollision(timer, bullet);
+					}, 10);
+				}
+			}
+			function bulletCollision(timer, bullet){
+				if (left < -30 || top < -30 || left > document.body.scrollWidth || top > document.body.scrollHeight){
 						clearInterval(timer)
 						bullet.remove();
+				}else{
+					for (let i in allDivs){
+						if(parseInt(allDivs[i].style.left) > left - 80 && parseInt(allDivs[i].style.left) < left + 30){
+							if(parseInt(allDivs[i].style.top) > top - 80 && parseInt(allDivs[i].style.top) < top + 30){
+								clearInterval(timer)
+								bullet.remove();
+								allDivs[i].remove();
+								allDivs.splice(i,1);
+							}
+						}
 					}
-				}, 10);
+				}
+			}
+			function getCoefsmallSpeed(currentBulletSpeed, coefSmall){
+				return ((currentBulletSpeed * coefSmall) / 2) + (((currentBulletSpeed * coefSmall) / 2) * (1 - coefSmall));
+			}
+			function getNormalSpeed(currentBulletSpeed, coefSmall){
+				return (currentBulletSpeed / 2) + ((currentBulletSpeed / 2) * (1 - coefSmall));
 			}
 		}
-		function getCoefsmallSpeed(currentBulletSpeed, coefSmall){
-			return ((currentBulletSpeed * coefSmall) / 2) + (((currentBulletSpeed * coefSmall) / 2) * (1 - coefSmall));
-		}
-		function getNormalSpeed(currentBulletSpeed, coefSmall){
-			return (currentBulletSpeed / 2) + ((currentBulletSpeed / 2) * (1 - coefSmall));
-		}
 	}
-}
 
 
 
-///SQUARES
+	///SQUARES
 
 
 
-let allDivs = [];
-
-
-createBox();
-setInterval(()=>{
-	if (allDivs.length < 10){
-		createBox();
-	}
-},1000)
-function createBox(){
-	let box = document.createElement("div");
-	box.className = "enemy";
-	allDivs.push(box);
-
-	let anotherDivs = [];
-	let anotherDivsMonitoring = setInterval(()=>{
-		let buffer = [];
-		for (let i in allDivs){
-			buffer.push(allDivs[i]);
+	let allDivs = [];
+	let boxCreator = setInterval(()=>{
+		if (allDivs.length < Math.floor(maxDivsOnMap)){
+			createBox();
 		}
-		for (let i in buffer){
-			if (buffer[i] == box){
-				buffer.splice(i,1);
+	},howOftenCreateDivs)
+	function createBox(){
+		let box = document.createElement("div");
+		box.className = "enemy";
+		allDivs.push(box);
+
+		let anotherDivs = [];
+		let anotherDivsMonitoring = setInterval(()=>{
+			let buffer = [];
+			for (let i in allDivs){
+				buffer.push(allDivs[i]);
 			}
-		}
-		anotherDivs = buffer;
-	},0)
+			for (let i in buffer){
+				if (buffer[i] == box){
+					buffer.splice(i,1);
+				}
+			}
+			anotherDivs = buffer;
+		},0)
 
 
-	//SPAWN BOX ON MAP
-	let spawnerX;
-	let spawnerY;
-	if (Math.random() > 0.5){
+		//SPAWN BOX ON MAP
+		let spawnerX;
+		let spawnerY;
 		if (Math.random() > 0.5){
-			spawnerX = -100;
+			if (Math.random() > 0.5){
+				spawnerX = -100;
+			}else{
+				spawnerX = document.body.scrollWidth + 40;
+			}
+			spawnerY = Math.floor((Math.random() * document.body.scrollHeight));
 		}else{
-			spawnerX = document.body.scrollWidth + 40;
-		}
-		spawnerY = Math.floor((Math.random() * document.body.scrollHeight));
-	}else{
-		spawnerX = Math.floor((Math.random() * document.body.scrollWidth));
-		if (Math.random() > 0.5){
-			spawnerY = -100;
-		}else{
-			spawnerY = document.body.scrollHeight + 40;
-		}
-	}
-
-
-	box.style.left = `${spawnerX}px`;
-	box.style.top = `${spawnerY}px`;
-	document.body.append(box);
-
-	//CHOSE MOVING DIRECTION
-	let directionX = Math.random() > 0.5 ? "right" : "left";
-	let directionY = Math.random() > 0.5 ? "up" : "down";
-
-
-	//START MOVING
-	let boxPosition = {left: spawnerX, top: spawnerY};
-	let movingTimer = setInterval(()=>{
-		moving();
-	},10);
-
-	function moving(){
-		let anotherDivsPosition = [];
-		for (let i in anotherDivs){
-			anotherDivsPosition.push({left: parseInt(anotherDivs[i].style.left), top: parseInt(anotherDivs[i].style.top)});
-		};
-		directionX = checkDirectionX();
-		directionY = checkDirectionY();
-
-
-		function checkDirectionX(){
-			if (directionX == "right"){
-				if (boxPosition.left >= (document.body.scrollWidth - 80)){
-					return "left";
-				}else{
-					for (let i in anotherDivsPosition){
-						if (boxPosition.left + 81 >= anotherDivsPosition[i].left && boxPosition.left + 81 <= anotherDivsPosition[i].left + 5){
-							if (boxPosition.top > anotherDivsPosition[i].top - 80 && boxPosition.top < anotherDivsPosition[i].top + 80){
-								return "left";
-							}
-						}
-					}
-					return "right";
-				}
-			}else if(directionX == "left"){
-				if (boxPosition.left <= 0){
-					return "right";
-				}else{
-					for (let i in anotherDivsPosition){
-						if (anotherDivsPosition[i].left + 81 >= boxPosition.left && anotherDivsPosition[i].left + 81 <= boxPosition.left + 5){
-							if (boxPosition.top > anotherDivsPosition[i].top - 80 && boxPosition.top < anotherDivsPosition[i].top + 80){
-								return "right";
-							}
-						}
-					}
-					return "left";
-				}
+			spawnerX = Math.floor((Math.random() * document.body.scrollWidth));
+			if (Math.random() > 0.5){
+				spawnerY = -100;
+			}else{
+				spawnerY = document.body.scrollHeight + 40;
 			}
 		}
-		function checkDirectionY(){
-			if (directionY == "down"){
-				if (boxPosition.top >= (document.body.scrollHeight - 80)){
-					return "up";
-				}else{
-					for (let i in anotherDivsPosition){
-						if (boxPosition.top + 81 >= anotherDivsPosition[i].top && boxPosition.top + 81 < anotherDivsPosition[i].top + 5){
-							if (boxPosition.left > anotherDivsPosition[i].left - 80 && boxPosition.left < anotherDivsPosition[i].left + 80){
-								return "up";
-							}
-						}
-					}
-					return "down";
-				}
-			}else if(directionY == "up"){
-				if (boxPosition.top <= 0){
-					return "down";
-				}else{
-					for (let i in anotherDivsPosition){
-						if (anotherDivsPosition[i].top + 81 >= boxPosition.top && anotherDivsPosition[i].top + 81 <= boxPosition.top + 5){
-							if (boxPosition.left > anotherDivsPosition[i].left - 80 && boxPosition.left < anotherDivsPosition[i].left + 80){
-								return "down";
-							}
-						}
-					}
-					return "up";
-				}
-			}
-		}
-		setTimeout(()=>{
-			//X MOVING
-			if (directionX == "right"){
-				boxPosition.left += enemySpeed;
-				box.style.left = `${boxPosition.left}px`;
-			}else if(directionX == "left"){
-				boxPosition.left -= enemySpeed;
-				box.style.left = `${boxPosition.left}px`;
-			}
-			//Y MOVING
-			if (directionY == "down"){
-				boxPosition.top += enemySpeed;
-				box.style.top = `${boxPosition.top}px`;
-			}else if(directionY == "up"){
-				boxPosition.top -= enemySpeed;
-				box.style.top = `${boxPosition.top}px`;
-			}
-		}, 0);
 
-		if (Math.random() < 0.0002){
-			clearInterval(anotherDivsMonitoring);
-			clearInterval(movingTimer);
+
+		box.style.left = `${spawnerX}px`;
+		box.style.top = `${spawnerY}px`;
+		document.body.prepend(box);
+
+		//CHOSE MOVING DIRECTION
+		let directionX = Math.random() > 0.5 ? "right" : "left";
+		let directionY = Math.random() > 0.5 ? "up" : "down";
+
+
+		//START MOVING
+		let boxPosition = {left: spawnerX, top: spawnerY};
+		let movingTimer = setInterval(()=>{
+			let isExist = false;
 			for (let i in allDivs){
 				if (allDivs[i] == box){
-					allDivs.splice(i,1);
+					isExist = true;
 				}
 			}
-			box.remove();
+			if (isExist){
+				moving();
+			}else{
+				clearInterval(movingTimer);
+				clearInterval(anotherDivsMonitoring);
+			}
+		},10);
+
+		function moving(){
+			let anotherDivsPosition = [];
+			for (let i in anotherDivs){
+				anotherDivsPosition.push({left: parseInt(anotherDivs[i].style.left), top: parseInt(anotherDivs[i].style.top)});
+			};
+			directionX = checkDirectionX();
+			directionY = checkDirectionY();
+
+
+			function checkDirectionX(){
+				if (directionX == "right"){
+					if (boxPosition.left >= (document.body.scrollWidth - 80)){
+						return "left";
+					}else{
+						for (let i in anotherDivsPosition){
+							if (boxPosition.left + 80 >= anotherDivsPosition[i].left && boxPosition.left + 80 < anotherDivsPosition[i].left + enemySpeed*2){
+								if (boxPosition.top >= anotherDivsPosition[i].top - 80 && boxPosition.top < anotherDivsPosition[i].top + 80){
+									return "left";
+								}
+							}
+						}
+						return "right";
+					}
+				}else if(directionX == "left"){
+					if (boxPosition.left <= 0){
+						return "right";
+					}else{
+						for (let i in anotherDivsPosition){
+							if (anotherDivsPosition[i].left + 80 >= boxPosition.left && anotherDivsPosition[i].left + 80 < boxPosition.left + enemySpeed*2){
+								if (boxPosition.top > anotherDivsPosition[i].top - 80 && boxPosition.top < anotherDivsPosition[i].top + 80){
+									return "right";
+								}
+							}
+						}
+						return "left";
+					}
+				}
+			}
+			function checkDirectionY(){
+				if (directionY == "down"){
+					if (boxPosition.top >= (document.body.scrollHeight - 80)){
+						return "up";
+					}else{
+						for (let i in anotherDivsPosition){
+							if (boxPosition.top + 80 >= anotherDivsPosition[i].top && boxPosition.top + 80 < anotherDivsPosition[i].top + enemySpeed*2){
+								if (boxPosition.left > anotherDivsPosition[i].left - 80 && boxPosition.left < anotherDivsPosition[i].left + 80){
+									return "up";
+								}
+							}
+						}
+						return "down";
+					}
+				}else if(directionY == "up"){
+					if (boxPosition.top <= 0){
+						return "down";
+					}else{
+						for (let i in anotherDivsPosition){
+							if (anotherDivsPosition[i].top + 80 >= boxPosition.top && anotherDivsPosition[i].top + 80 < boxPosition.top + enemySpeed*2){
+								if (boxPosition.left > anotherDivsPosition[i].left - 80 && boxPosition.left < anotherDivsPosition[i].left + 80){
+									return "down";
+								}
+							}
+						}
+						return "up";
+					}
+				}
+			}
+			setTimeout(()=>{
+				//X MOVING
+				if (directionX == "right"){
+					boxPosition.left += enemySpeed;
+					box.style.left = `${boxPosition.left}px`;
+				}else if(directionX == "left"){
+					boxPosition.left -= enemySpeed;
+					box.style.left = `${boxPosition.left}px`;
+				}
+				//Y MOVING
+				if (directionY == "down"){
+					boxPosition.top += enemySpeed;
+					box.style.top = `${boxPosition.top}px`;
+				}else if(directionY == "up"){
+					boxPosition.top -= enemySpeed;
+					box.style.top = `${boxPosition.top}px`;
+				}
+
+
+			}, 0);
+			if (boxPosition.left + 80 >= positionX && boxPosition.left <= positionX + 60 ){
+				if (boxPosition.top + 80 >= positionY && boxPosition.top <= positionY + 60){
+					clearInterval(anotherDivsMonitoring);
+					clearInterval(movingTimer);
+					for (let i in allDivs){
+						if (allDivs[i] == box){
+							allDivs.splice(i,1);
+						}
+					}
+					box.remove();
+					document.querySelector(".score").innerHTML = "Your score is: " + seconds +"s";
+					document.querySelector("#loseBlock").style.left = 0;
+					isWasted = true;
+				}
+			}
+			if (isWasted){
+				clearInterval(anotherDivsMonitoring);
+				clearInterval(movingTimer);
+				box.remove();
+			}
 		}
 	}
 }
