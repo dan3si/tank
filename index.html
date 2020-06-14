@@ -8,7 +8,7 @@
 	<div id="tank">
 		<div class="gun"></div>
 	</div>
-	<div id="timer"></div>
+	<div id="timer">0</div>
 	<div id="loseBlock">
 		<div class="loseMessage">
 			<div class="justFlexWrapper">
@@ -19,12 +19,12 @@
 		</div>
 		<div class="help"><img src="textures/info.jpg" alt="info"><span></span></div>
 	</div>
+	<div class="start"><button class="startPlaying">Start playing</button></div>
 </body>
 <style type="text/css">
 	*{
 		margin: 0;
 		padding: 0;
-		box-sizing: border-box;
 	}
 	body{
 		height: 100vh;
@@ -52,6 +52,8 @@
 		height: 60px;
 		width: 60px;
 		position: absolute;
+		top: -100px;
+		left: -100px;
 	}
 		#tank .gun{
 			box-sizing: border-box;
@@ -97,6 +99,32 @@
 		align-items: center;
 		font-size: 2rem;
 	}
+	.start{
+		height: 100%;
+		width: 100%;
+		background: black;
+		opacity: 0.5;
+		position: absolute;
+		display: flex;
+		justify-content: center;
+		align-items: center;
+	}
+		button.startPlaying{
+			height: 85px;
+			width: 300px;
+			border-radius: 80px;
+			background: orange;
+			border: none;
+			font-size: 2rem;
+			letter-spacing: 2px;
+			transition: all 0.3s;
+		}
+			button.startPlaying:hover{
+				border: 1px solid #4d4f4f;
+				transform: scale(1.1);
+				box-shadow: 0 0 4px orange;
+				cursor: pointer;
+			}
 	#loseBlock{
 		height: 100%;
 		width: 100%;
@@ -170,7 +198,10 @@
 	}
 </style>
 <script>
-startGame();
+document.querySelector(".startPlaying").onclick = ()=>{
+	document.querySelector(".start").style.display = "none";
+	startGame();
+}
 document.querySelector(".playAgain").onclick = ()=>{
 	document.querySelector("#loseBlock").style.display = "none";
 	startGame();
@@ -438,6 +469,32 @@ document.querySelector(".playAgain").onclick = ()=>{
 			bullet.style.top = top + "px";
 			document.body.prepend(bullet);
 
+
+			let gunRecoilStep = 1;//GUN RECOIL ANIMATION
+			let gunTop = -25;
+			let gunRecoilTimer = setInterval(()=>{
+				if (gunRecoilStep == 1){
+					if (gunTop < -22){
+						gunTop += 0.4;
+					}else{
+						gunRecoilStep = 2;
+					}
+				}else if (gunRecoilStep == 2){
+					if (gunTop > -26){
+						gunTop -= 0.3;
+					}else{
+						gunRecoilStep = 3;
+					}
+				}else if (gunRecoilStep == 3){
+					if (gunTop < -25){
+						gunTop += 0.2;
+					}else{					
+						clearInterval(gunRecoilTimer);
+					}
+				}
+				document.querySelector(".gun").style.top = gunTop + "px";
+			},0)
+
 			let bulletTeleport = true;
 			let currentBulletSpeed = bulletSpeed * 2;
 			let recoilPower = 1;
@@ -673,7 +730,6 @@ document.querySelector(".playAgain").onclick = ()=>{
 					if (recoilPower > 0){
 						recoilPower -= 0.2;
 					}else{
-						console.log(recoilInterval)
 						clearInterval(recoilInterval);
 					}
 				}
@@ -880,7 +936,7 @@ document.querySelector(".playAgain").onclick = ()=>{
 					}
 					box.remove();
 					document.querySelector(".score").innerHTML = "Your score is: " + seconds +"s";
-					document.querySelector(".help span").innerHTML = Math.random() > 0.5 ? "Avoid and destroy saws. Don't let them slash you!" : `Use "W", "S", "A", "D", keys to control tank and mouseclick to shoot.`;
+					document.querySelector(".help span").innerHTML = Math.random() > 0.5 ? "Avoid and destroy saws. Don't let them slash you!" : `Use "W", "S", "A", "D", keys to control tank and mouseclick to shoot`;
 					document.querySelector("#loseBlock").style.display = "flex";
 					isWasted = true;
 				}
