@@ -8,7 +8,7 @@
 	<div id="tank">
 		<div class="gun"></div>
 	</div>
-	<div id="timer">0</div>
+	<div id="timer"></div>
 	<div id="loseBlock">
 		<div class="loseMessage">
 			<div class="justFlexWrapper">
@@ -17,6 +17,7 @@
 			</div>
 			<button class="playAgain">Play again</button>
 		</div>
+		<div class="help"><img src="textures/info.jpg" alt="info"><span></span></div>
 	</div>
 </body>
 <style type="text/css">
@@ -33,10 +34,20 @@
 	.enemy{
 		height: 80px;
 		width: 80px;
-		position: absolute;
-		border: 1px solid black;
-		background: #990c32;
+		position: absolute;	
+		animation: rotate linear infinite;
 	}
+		.enemy:before{
+			content: "";
+			height: 110px;
+			width: 110px;
+			top: -15px;
+			left: -15px;
+			position: absolute;		
+			background: url(textures/saw.png) center;
+			background-size: 155%;
+		}
+
 	#tank{
 		height: 60px;
 		width: 60px;
@@ -55,11 +66,10 @@
 		}
 		#tank:after{
 			content: "";
-			box-sizing: border-box;
 			display: block;
 			height: 60px;
 			width: 60px;
-			background: orange;
+			background: url(textures/camouflage.jpg);
 			border: 2px solid #4d4f4f;
 			border-radius: 100%;
 			position: absolute;
@@ -68,9 +78,8 @@
 		height: 30px;
 		width: 30px;
 		border-radius: 100%;
-		background: #00abd8;
+		background: url(textures/fire.jpg);
 		position: absolute;
-		border: 2px solid #4d4f4f;
 	}
 	#timer{
 		height: 70px;
@@ -92,12 +101,13 @@
 		height: 100%;
 		width: 100%;
 		background: black;
-		opacity: 0.5;
+		opacity: 0;
 		position: absolute;
-		display: flex;
+		display: none;
 		justify-content: center;
 		align-items: center;
-		left: -100%;
+		flex-direction: column;
+		animation: loseblock .3s ease 1 forwards;
 	}
 		.loseMessage{
 			height: 300px;
@@ -125,20 +135,44 @@
 				width: 150px;
 				border-radius: 20px;
 				background: orange;
-				border: 1px solid #4d4f4f;
-				font-size: 1rem;
+				border: none;
+				font-size: 1.1rem;
 				letter-spacing: 1px;
 			}
 				button.playAgain:hover{
-					border: 1px solid #00abd8;
+					border: 1px solid #4d4f4f;
 				}
-
+	.help{
+		padding: 10px;
+		margin-top: 200px;
+		margin-top: 150px;
+		font-size: 1.6rem;
+		background: white;
+		border-radius: 15px;
+		display: flex;
+		align-items: center;
+	}
+		.help img{
+			height: 50px;
+			width: 50px;
+			margin-left: 10px;
+			margin-right: 15px;
+		}
+	@keyframes rotate{
+		100%{
+			transform: rotate(360deg);
+		}
+	}
+	@keyframes loseblock{
+		100%{
+			opacity: 0.5;
+		}
+	}
 </style>
 <script>
 startGame();
 document.querySelector(".playAgain").onclick = ()=>{
-	document.querySelector("#loseBlock").style.left = "-100%";
-	document.querySelector("#timer").innerHTML = "0";
+	document.querySelector("#loseBlock").style.display = "none";
 	startGame();
 }
 	function startGame(){
@@ -164,11 +198,12 @@ document.querySelector(".playAgain").onclick = ()=>{
 	let howOftenCreateDivs = 1000;
 	let seconds = 0;
 
+	document.querySelector("#timer").innerHTML = `0`;
 	let complicator = setInterval(()=>{
 		enemySpeed += 0.1;
 		maxDivsOnMap += 0.1;
 		seconds++;
-		document.querySelector("#timer").innerHTML = `${seconds}`
+		document.querySelector("#timer").innerHTML = `${seconds}`;
 	},1000)
 
 
@@ -405,6 +440,9 @@ document.querySelector(".playAgain").onclick = ()=>{
 
 			let bulletTeleport = true;
 			let currentBulletSpeed = bulletSpeed * 2;
+			let recoilPower = 1;
+			let recoilUp = true;
+
 			if (x >= 0 && y >= 0){
 				if (x >= y){
 					let coefSmall = y / x;
@@ -426,6 +464,12 @@ document.querySelector(".playAgain").onclick = ()=>{
 						bullet.style.top = top + "px";
 						bulletCollision(timer, bullet);
 					}, 10);
+
+					let recoilInterval = setInterval(()=>{
+						positionX -= (0.2 * recoilPower);
+						positionY -= (0.2 * coefSmall * recoilPower);
+						recoilTankMove(recoilInterval);
+					},0)
 				}else{
 					let coefSmall = x / y;
 					let timer = setInterval(()=>{
@@ -446,6 +490,12 @@ document.querySelector(".playAgain").onclick = ()=>{
 						bullet.style.top = top + "px";
 						bulletCollision(timer, bullet);
 					}, 10);
+
+					let recoilInterval = setInterval(()=>{
+						positionX -= (0.2 * coefSmall * recoilPower);
+						positionY -= (0.2 * recoilPower);
+						recoilTankMove(recoilInterval);
+					},0)
 				}
 			}else if (x < 0 && y >= 0){
 				if (-x >= y){
@@ -468,6 +518,12 @@ document.querySelector(".playAgain").onclick = ()=>{
 						bullet.style.top = top + "px";
 						bulletCollision(timer, bullet);
 					}, 10);
+
+					let recoilInterval = setInterval(()=>{
+						positionX += (0.2 * recoilPower);
+						positionY -= (0.2 * coefSmall * recoilPower);
+						recoilTankMove(recoilInterval);
+					},0)
 				}else{
 					let coefSmall = -x / y;
 					let timer = setInterval(()=>{
@@ -488,6 +544,12 @@ document.querySelector(".playAgain").onclick = ()=>{
 						bullet.style.top = top + "px";
 						bulletCollision(timer, bullet);
 					}, 10);
+
+					let recoilInterval = setInterval(()=>{
+						positionX += (0.2 * coefSmall * recoilPower);
+						positionY -= (0.2 * recoilPower);
+						recoilTankMove(recoilInterval);
+					},0)
 				}
 			}else if (x < 0 && y < 0){
 				if (-x >= -y){
@@ -510,6 +572,12 @@ document.querySelector(".playAgain").onclick = ()=>{
 						bullet.style.top = top + "px";
 						bulletCollision(timer, bullet);
 					}, 10);
+
+					let recoilInterval = setInterval(()=>{
+						positionX += (0.2 * recoilPower);
+						positionY += (0.2 * coefSmall * recoilPower);
+						recoilTankMove(recoilInterval);
+					},0)
 				}else{
 					let coefSmall = -x / -y;
 					let timer = setInterval(()=>{
@@ -530,6 +598,12 @@ document.querySelector(".playAgain").onclick = ()=>{
 						bullet.style.top = top + "px";
 						bulletCollision(timer, bullet);
 					}, 10);
+
+					let recoilInterval = setInterval(()=>{
+						positionX += (0.2 * coefSmall * recoilPower);
+						positionY += (0.2 * recoilPower);
+						recoilTankMove(recoilInterval);
+					},0)
 				}
 			}else{
 				if (x >= -y){
@@ -552,6 +626,12 @@ document.querySelector(".playAgain").onclick = ()=>{
 						bullet.style.top = top + "px";
 						bulletCollision(timer, bullet);
 					}, 10);
+
+					let recoilInterval = setInterval(()=>{
+						positionX -= (0.2 * recoilPower);
+						positionY += (0.2 * coefSmall * recoilPower);
+						recoilTankMove(recoilInterval);
+					},0)
 				}else{
 					let coefSmall = x / -y;
 					let timer = setInterval(()=>{
@@ -572,8 +652,33 @@ document.querySelector(".playAgain").onclick = ()=>{
 						bullet.style.top = top + "px";
 						bulletCollision(timer, bullet);
 					}, 10);
+
+					let recoilInterval = setInterval(()=>{
+						positionX -= (0.2 * coefSmall * recoilPower);
+						positionY += (0.2 * recoilPower);
+						recoilTankMove(recoilInterval);
+					},0)
 				}
 			}
+
+			function recoilTankMove(recoilInterval){
+				tank.style.left = positionX + "px";
+				tank.style.top = positionY + "px";
+				if (recoilUp){
+					recoilPower += 0.2;
+					if (recoilPower >= 4){
+						recoilUp = false;
+					}
+				}else{
+					if (recoilPower > 0){
+						recoilPower -= 0.2;
+					}else{
+						console.log(recoilInterval)
+						clearInterval(recoilInterval);
+					}
+				}
+			}
+
 			function bulletCollision(timer, bullet){
 				if (left < -30 || top < -30 || left > document.body.scrollWidth || top > document.body.scrollHeight){
 						clearInterval(timer)
@@ -654,6 +759,7 @@ document.querySelector(".playAgain").onclick = ()=>{
 
 		box.style.left = `${spawnerX}px`;
 		box.style.top = `${spawnerY}px`;
+		box.style.animationDuration = 5 / enemySpeed + "s";
 		document.body.prepend(box);
 
 		//CHOSE MOVING DIRECTION
@@ -689,7 +795,7 @@ document.querySelector(".playAgain").onclick = ()=>{
 
 			function checkDirectionX(){
 				if (directionX == "right"){
-					if (boxPosition.left >= (document.body.scrollWidth - 80)){
+					if (boxPosition.left >= (document.body.scrollWidth - 90)){
 						return "left";
 					}else{
 						for (let i in anotherDivsPosition){
@@ -702,7 +808,7 @@ document.querySelector(".playAgain").onclick = ()=>{
 						return "right";
 					}
 				}else if(directionX == "left"){
-					if (boxPosition.left <= 0){
+					if (boxPosition.left <= 10){
 						return "right";
 					}else{
 						for (let i in anotherDivsPosition){
@@ -718,7 +824,7 @@ document.querySelector(".playAgain").onclick = ()=>{
 			}
 			function checkDirectionY(){
 				if (directionY == "down"){
-					if (boxPosition.top >= (document.body.scrollHeight - 80)){
+					if (boxPosition.top >= (document.body.scrollHeight - 90)){
 						return "up";
 					}else{
 						for (let i in anotherDivsPosition){
@@ -731,7 +837,7 @@ document.querySelector(".playAgain").onclick = ()=>{
 						return "down";
 					}
 				}else if(directionY == "up"){
-					if (boxPosition.top <= 0){
+					if (boxPosition.top <= 10){
 						return "down";
 					}else{
 						for (let i in anotherDivsPosition){
@@ -762,8 +868,6 @@ document.querySelector(".playAgain").onclick = ()=>{
 					boxPosition.top -= enemySpeed;
 					box.style.top = `${boxPosition.top}px`;
 				}
-
-
 			}, 0);
 			if (boxPosition.left + 80 >= positionX && boxPosition.left <= positionX + 60 ){
 				if (boxPosition.top + 80 >= positionY && boxPosition.top <= positionY + 60){
@@ -776,7 +880,8 @@ document.querySelector(".playAgain").onclick = ()=>{
 					}
 					box.remove();
 					document.querySelector(".score").innerHTML = "Your score is: " + seconds +"s";
-					document.querySelector("#loseBlock").style.left = 0;
+					document.querySelector(".help span").innerHTML = Math.random() > 0.5 ? "Avoid and destroy saws. Don't let them slash you!" : `Use "W", "S", "A", "D", keys to control tank and mouseclick to shoot.`;
+					document.querySelector("#loseBlock").style.display = "flex";
 					isWasted = true;
 				}
 			}
