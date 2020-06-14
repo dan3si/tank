@@ -103,7 +103,7 @@
 		height: 100%;
 		width: 100%;
 		background: black;
-		opacity: 0.5;
+		opacity: 0.6;
 		position: absolute;
 		display: flex;
 		justify-content: center;
@@ -115,21 +115,19 @@
 			border-radius: 80px;
 			background: orange;
 			border: none;
-			font-size: 2rem;
+			font-size: 2.1rem;
 			letter-spacing: 2px;
 			transition: all 0.3s;
 		}
 			button.startPlaying:hover{
-				border: 1px solid #4d4f4f;
 				transform: scale(1.1);
-				box-shadow: 0 0 4px orange;
+				box-shadow: 0 0 10px orange;
 				cursor: pointer;
 			}
 	#loseBlock{
 		height: 100%;
 		width: 100%;
 		background: black;
-		opacity: 0;
 		position: absolute;
 		display: none;
 		justify-content: center;
@@ -192,8 +190,11 @@
 		}
 	}
 	@keyframes loseblock{
+		0%{
+			opacity: 0;
+		}
 		100%{
-			opacity: 0.5;
+			opacity: 0.6;
 		}
 	}
 </style>
