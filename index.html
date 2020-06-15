@@ -25,6 +25,7 @@
 	*{
 		margin: 0;
 		padding: 0;
+		box-sizing: border-box;
 	}
 	body{
 		height: 100vh;
@@ -47,7 +48,6 @@
 			background: url(textures/saw.png) center;
 			background-size: 155%;
 		}
-
 	#tank{
 		height: 60px;
 		width: 60px;
@@ -55,6 +55,18 @@
 		top: -100px;
 		left: -100px;
 	}
+		#tank:after{
+			content: "";
+			display: block;
+			height: 60px;
+			width: 60px;
+			background: url(textures/camouflage.jpg);
+			border: 2px solid #4d4f4f;
+			border-radius: 100%;
+			position: absolute;
+			left: -2px;
+			top: -2px;
+		}
 		#tank .gun{
 			box-sizing: border-box;
 			height: 40px;
@@ -65,16 +77,6 @@
 			top: -25px;
 			left: 50%;
 			transform: translate(-50%);
-		}
-		#tank:after{
-			content: "";
-			display: block;
-			height: 60px;
-			width: 60px;
-			background: url(textures/camouflage.jpg);
-			border: 2px solid #4d4f4f;
-			border-radius: 100%;
-			position: absolute;
 		}
 	.bullet{
 		height: 30px;
@@ -524,8 +526,12 @@ document.querySelector(".playAgain").onclick = ()=>{
 					}, 10);
 
 					let recoilInterval = setInterval(()=>{
-						positionX -= (0.2 * recoilPower);
-						positionY -= (0.2 * coefSmall * recoilPower);
+						if (positionX > 2){
+							positionX -= (0.2 * recoilPower);
+						}
+						if (positionY > 2){
+							positionY -= (0.2 * coefSmall * recoilPower);
+						}
 						recoilTankMove(recoilInterval);
 					},0)
 				}else{
@@ -550,8 +556,12 @@ document.querySelector(".playAgain").onclick = ()=>{
 					}, 10);
 
 					let recoilInterval = setInterval(()=>{
-						positionX -= (0.2 * coefSmall * recoilPower);
-						positionY -= (0.2 * recoilPower);
+						if (positionX > 2){
+							positionX -= (0.2 * coefSmall * recoilPower);
+						}
+						if (positionY > 2){
+							positionY -= (0.2 * recoilPower);
+						}
 						recoilTankMove(recoilInterval);
 					},0)
 				}
@@ -578,8 +588,12 @@ document.querySelector(".playAgain").onclick = ()=>{
 					}, 10);
 
 					let recoilInterval = setInterval(()=>{
-						positionX += (0.2 * recoilPower);
-						positionY -= (0.2 * coefSmall * recoilPower);
+						if (positionX < document.body.scrollWidth - 62){
+							positionX += (0.2 * recoilPower);
+						}
+						if (positionY > 2){
+							positionY -= (0.2 * coefSmall * recoilPower);
+						}
 						recoilTankMove(recoilInterval);
 					},0)
 				}else{
@@ -604,8 +618,12 @@ document.querySelector(".playAgain").onclick = ()=>{
 					}, 10);
 
 					let recoilInterval = setInterval(()=>{
-						positionX += (0.2 * coefSmall * recoilPower);
-						positionY -= (0.2 * recoilPower);
+						if (positionX < document.body.scrollWidth - 62){
+							positionX += (0.2 * coefSmall * recoilPower);
+						}
+						if (positionY > 2){
+							positionY -= (0.2 * recoilPower);
+						}
 						recoilTankMove(recoilInterval);
 					},0)
 				}
@@ -632,8 +650,12 @@ document.querySelector(".playAgain").onclick = ()=>{
 					}, 10);
 
 					let recoilInterval = setInterval(()=>{
-						positionX += (0.2 * recoilPower);
-						positionY += (0.2 * coefSmall * recoilPower);
+						if (positionX < document.body.scrollWidth - 62){
+							positionX += (0.2 * recoilPower);
+						}
+						if (positionY < document.body.scrollHeight - 62){
+							positionY += (0.2 * coefSmall * recoilPower);
+						}
 						recoilTankMove(recoilInterval);
 					},0)
 				}else{
@@ -658,8 +680,12 @@ document.querySelector(".playAgain").onclick = ()=>{
 					}, 10);
 
 					let recoilInterval = setInterval(()=>{
-						positionX += (0.2 * coefSmall * recoilPower);
-						positionY += (0.2 * recoilPower);
+						if (positionX < document.body.scrollWidth - 62){
+							positionX += (0.2 * coefSmall * recoilPower);
+						}
+						if (positionY < document.body.scrollHeight - 62){
+							positionY += (0.2 * recoilPower);
+						}
 						recoilTankMove(recoilInterval);
 					},0)
 				}
@@ -686,8 +712,12 @@ document.querySelector(".playAgain").onclick = ()=>{
 					}, 10);
 
 					let recoilInterval = setInterval(()=>{
-						positionX -= (0.2 * recoilPower);
-						positionY += (0.2 * coefSmall * recoilPower);
+						if (positionX > 2){
+							positionX -= (0.2 * recoilPower);
+						}
+						if (positionY < document.body.scrollHeight - 62){
+							positionY += (0.2 * coefSmall * recoilPower);
+						}
 						recoilTankMove(recoilInterval);
 					},0)
 				}else{
@@ -712,8 +742,12 @@ document.querySelector(".playAgain").onclick = ()=>{
 					}, 10);
 
 					let recoilInterval = setInterval(()=>{
-						positionX -= (0.2 * coefSmall * recoilPower);
-						positionY += (0.2 * recoilPower);
+						if (positionX > 2){
+							positionX -= (0.2 * coefSmall * recoilPower);
+						}
+						if (positionY < document.body.scrollHeight - 62){
+							positionY += (0.2 * recoilPower);
+						}
 						recoilTankMove(recoilInterval);
 					},0)
 				}
@@ -764,7 +798,7 @@ document.querySelector(".playAgain").onclick = ()=>{
 
 
 
-	///SQUARES
+	///SAWS
 
 
 
@@ -794,7 +828,7 @@ document.querySelector(".playAgain").onclick = ()=>{
 		},0)
 
 
-		//SPAWN BOX ON MAP
+		//SPAWN SAW ON MAP
 		let spawnerX;
 		let spawnerY;
 		if (Math.random() > 0.5){
